@@ -1,0 +1,54 @@
+#include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+
+const char* ssid = "Your_WiFi_Name";
+const char* password = "Your_WiFi_Password";
+
+ESP8266WebServer server(80);
+
+int ledPin = 2;   // GPIO2 (D4 on NodeMCU)
+
+void setup() {
+  Serial.begin(9600);
+
+  pinMode(ledPin, OUTPUT);
+  digitalWrite(ledPin, LOW);
+
+  // Connect to Wi-Fi
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting to WiFi");
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("\nWiFi Connected");
+  Serial.println(WiFi.localIP());
+
+  // Web page
+  server.on("/", []() {
+    server.send(200, "text/html",
+      "<h1>ESP8266 LED Control</h1>"
+      "<a href='/on'><button>LED ON</button></a><br><br>"
+      "<a href='/off'><button>LED OFF</button></a>");
+  });
+
+  // LED ON
+  server.on("/on", []() {
+    digitalWrite(ledPin, HIGH);
+    server.send(200, "text/html", "LED is ON<br><a href='/'>Back</a>");
+  });
+
+  // LED OFF
+  server.on("/off", []() {
+    digitalWrite(ledPin, LOW);
+    server.send(200, "text/html", "LED is OFF<br><a href='/'>Back</a>");
+  });
+
+  server.begin();
+}
+
+void loop() {
+  server.handleClient();
+}
