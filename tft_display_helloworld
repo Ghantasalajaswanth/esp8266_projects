@@ -1,0 +1,44 @@
+#include <SPI.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_ILI9341.h>
+
+// ESP32 pin configuration
+#define TFT_CS   15
+#define TFT_DC   2
+#define TFT_RST  4
+
+// Create TFT object
+Adafruit_ILI9341 tft(TFT_CS, TFT_DC, TFT_RST);
+
+void setup() {
+  Serial.begin(115200);
+  Serial.println("ESP32 + ILI9341 TFT");
+
+  // Initialize SPI & display
+  tft.begin();
+
+  // Landscape mode
+  tft.setRotation(1);
+
+  // Clear screen
+  tft.fillScreen(ILI9341_BLACK);
+
+  // Display text
+  tft.setTextColor(ILI9341_GREEN);
+  tft.setTextSize(3);
+  tft.setCursor(40, 60);
+  tft.println("HELLO");
+
+  tft.setTextColor(ILI9341_YELLOW);
+  tft.setTextSize(2);
+  tft.setCursor(40, 120);
+  tft.println("ESP32");
+
+  tft.setTextColor(ILI9341_CYAN);
+  tft.setCursor(40, 160);
+  tft.println("ILI9341 TFT");
+}
+
+void loop() {
+  // Nothing needed
+}
