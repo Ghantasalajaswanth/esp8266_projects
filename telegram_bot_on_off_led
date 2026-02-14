@@ -6,8 +6,8 @@
 const char* ssid = "Jaswanth";
 const char* password = "99887766";
 
-#define BOT_TOKEN "8503749780:AAHVaS63JstjLaVpsPhjfCFN1jKr7YFgLWM"
-#define CHAT_ID "935326969"
+#define BOT_TOKEN "BOT_TOKEN"
+#define CHAT_ID "CHATID"
 
 WiFiClientSecure client;
 UniversalTelegramBot bot(BOT_TOKEN, client);
