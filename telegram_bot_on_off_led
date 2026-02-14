@@ -1,0 +1,70 @@
+#include <WiFi.h>
+#include <WiFiClientSecure.h>
+#include <UniversalTelegramBot.h>
+#include <ArduinoJson.h>
+
+const char* ssid = "Jaswanth";
+const char* password = "99887766";
+
+#define BOT_TOKEN "8503749780:AAHVaS63JstjLaVpsPhjfCFN1jKr7YFgLWM"
+#define CHAT_ID "935326969"
+
+WiFiClientSecure client;
+UniversalTelegramBot bot(BOT_TOKEN, client);
+
+const int ledPin = 2;
+unsigned long lastTimeBotRan;
+int botRequestDelay = 1000;
+
+void handleNewMessages(int numNewMessages) {
+  for (int i = 0; i < numNewMessages; i++) {
+    
+    String text = bot.messages[i].text;
+    String chat_id = bot.messages[i].chat_id;
+
+    if (chat_id != CHAT_ID) {
+      bot.sendMessage(chat_id, "Unauthorized user", "");
+      continue;
+    }
+
+    if (text == "/on") {
+      digitalWrite(ledPin, HIGH);
+      bot.sendMessage(chat_id, "LED is ON", "");
+    }
+
+    if (text == "/off") {
+      digitalWrite(ledPin, LOW);
+      bot.sendMessage(chat_id, "LED is OFF", "");
+    }
+  }
+}
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(ledPin, OUTPUT);
+
+  WiFi.begin(ssid, password);
+  client.setInsecure();
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("Connected");
+
+  bot.sendMessage(CHAT_ID, "Bot Started", "");
+}
+
+void loop() {
+  if (millis() - lastTimeBotRan > botRequestDelay) {
+    int numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+
+    while (numNewMessages) {
+      handleNewMessages(numNewMessages);
+      numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+    }
+
+    lastTimeBotRan = millis();
+  }
+}
